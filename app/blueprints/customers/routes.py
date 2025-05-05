@@ -4,9 +4,11 @@ from marshmallow import ValidationError
 from app.blueprints.customers import customers_bp
 from app.blueprints.customers.schemas import customer_schema, customers_schema
 from app.models import Customer, db
+from app.extensions import cache, limiter
 
 # Create Customer
 @customers_bp.route("/", methods=["POST"])
+@limiter.limit("5/hour") # limiting to 5 per hour because their could be many new customers but mechanic shops generally don't have a ton of customers in an hour due to time.
 def create_customer():
   try:
     customer_data = customer_schema.load(request.json)
@@ -26,6 +28,7 @@ def create_customer():
 
 # Get All Customers
 @customers_bp.route("/", methods=["GET"])
+@cache.cached(timeout=60) # Cached for 60 seconds because the shop will likely need to pull up customers for appointments frequently and since this is not likely to be updated very frequently at a mechanic shop I think 60 seconds is a decent amount of time. Can easily be changed if it does become an issue. 
 def get_customers():
   query = select(Customer)
   result = db.session.execute(query).scalars().all()

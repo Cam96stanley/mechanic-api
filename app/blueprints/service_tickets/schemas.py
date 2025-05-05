@@ -7,7 +7,7 @@ class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
   customer = fields.Nested("CustomerSchema")
   class Meta:
     model = Service_Ticket
-    fields = ("mechanic_ids", "vin", "service_date", "service_desc", "customer_id", "mechanics", "customer")
+    fields = ("mechanic_ids", "vin", "service_date", "service_desc", "customer_id", "mechanics", "customer", "id")
     
 ticket_schema = ServiceTicketSchema()
 tickets_schema = ServiceTicketSchema(many=True)

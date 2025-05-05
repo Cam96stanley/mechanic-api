@@ -4,9 +4,10 @@ from marshmallow import ValidationError
 from app.blueprints.mechanics import mechanics_bp
 from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema
 from app.models import Mechanic, db
+from app.extensions import limiter, cache
 
 # Create Mechanic
-@mechanics_bp.route("/", methods=["POST"])
+@mechanics_bp.route("/", methods=["POST"]) # Did not limit here because it is likely to be a protected internal route
 def create_mechanic():
   try:
     mechanic_data = mechanic_schema.load(request.json)
@@ -27,6 +28,7 @@ def create_mechanic():
 
 # Get All Mechanics
 @mechanics_bp.route("/", methods=["GET"])
+@cache.cached(timeout=60) # Caching for 60 seconds because management or HR may be pulling up all mechanics frequently for scheduling or HR purposes and mechanics probably wont be updated frequently so this makes sense. 
 def get_mechanics():
   query = select(Mechanic)
   result = db.session.execute(query).scalars().all()

@@ -5,6 +5,7 @@ from app.blueprints.mechanics import mechanics_bp
 from app.blueprints.mechanics.schemas import mechanic_schema, mechanics_schema
 from app.models import Mechanic, db
 from app.extensions import limiter, cache
+from app.utils.util import token_required
 
 # Create Mechanic
 @mechanics_bp.route("/", methods=["POST"]) # Did not limit here because it is likely to be a protected internal route

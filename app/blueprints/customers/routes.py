@@ -2,9 +2,36 @@ from flask import request, jsonify
 from sqlalchemy import select, delete
 from marshmallow import ValidationError
 from app.blueprints.customers import customers_bp
-from app.blueprints.customers.schemas import customer_schema, customers_schema
+from app.blueprints.customers.schemas import customer_schema, customers_schema, login_schema
 from app.models import Customer, db
 from app.extensions import cache, limiter
+from app.utils.util import encode_token, token_required
+
+# login
+@customers_bp.route("/login", methods=["POST"])
+def login():
+  try:
+    credentials = login_schema.load(request.json)
+    username = credentials["email"]
+    password = credentials["password"]
+  except KeyError:
+    return jsonify({"message": "Invalid payload, expecting username and password"}), 400
+  
+  query = select(Customer).where(Customer.email == username)
+  customer = db.session.execute(query).scalar_one_or_none()
+  
+  if customer and customer.password == password:
+    auth_token = encode_token(customer.id)
+    
+    response = {
+      'status': 'success',
+      'message': 'Successfully logged in',
+      'auth_token': auth_token
+    }
+    return jsonify(response), 200
+  else:
+    return jsonify({'message': 'Invalid email or password'}), 401
+  
 
 # Create Customer
 @customers_bp.route("/", methods=["POST"])
@@ -18,6 +45,7 @@ def create_customer():
   new_customer = Customer(
                     name=customer_data["name"],
                     email=customer_data["email"],
+                    password=customer_data["password"],
                     phone=customer_data["phone"]
                     )
   
@@ -45,9 +73,11 @@ def get_customer(customer_id):
   return customer_schema.jsonify(customer), 200
 
 # Update Customer
-@customers_bp.route("/<int:customer_id>", methods=["PUT"])
+@customers_bp.route("/", methods=["PUT"])
+@token_required
 def update_customer(customer_id):
-  query = select(Customer).where(customer_id == Customer.id)
+  print(customer_id)
+  query = select(Customer).where(Customer.id == int(customer_id))
   customer = db.session.execute(query).scalars().first()
   
   if customer == None:
@@ -65,9 +95,10 @@ def update_customer(customer_id):
   return customer_schema.jsonify(customer), 200
 
 # Delete Customer
-@customers_bp.route("/<int:customer_id>", methods=["DELETE"])
+@customers_bp.route("/", methods=["DELETE"])
+@token_required
 def delete_customer(customer_id):
-  query = select(Customer).where(customer_id == Customer.id)
+  query = select(Customer).where(Customer.id == int(customer_id))
   customer = db.session.execute(query).scalars().first()
   if customer:
     db.session.delete(customer)
@@ -75,3 +106,5 @@ def delete_customer(customer_id):
     return jsonify({"message": f"successfully deleted customer {customer_id}"}), 200
   else:
     return jsonify({"error": "customer not found"}), 404
+  
+  

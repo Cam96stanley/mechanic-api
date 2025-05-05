@@ -2,9 +2,10 @@ from flask import request, jsonify
 from sqlalchemy import select, delete
 from marshmallow import ValidationError
 from app.blueprints.service_tickets import tickets_bp
-from app.blueprints.service_tickets.schemas import ticket_schema, return_ticket_schema, return_tickets_schema
+from app.blueprints.service_tickets.schemas import ticket_schema, return_ticket_schema, return_tickets_schema, my_tickets_schema
 from app.models import Mechanic, Service_Ticket, db
 from app.extensions import cache
+from app.utils.util import token_required
 
 # Create Ticket
 @tickets_bp.route("/", methods=["POST"]) # Did not limit here because this will likely be a protected internal route
@@ -47,3 +48,14 @@ def get_ticket(ticket_id):
     return jsonify({"message": "invalid ticket id"}), 404
   else:
     return return_ticket_schema.jsonify(ticket), 200
+  
+# Get Tickets for Customer
+@tickets_bp.route("/my-tickets", methods=["GET"])
+@token_required
+def get_customer_ticket(customer_id):
+  query = select(Service_Ticket).where(Service_Ticket.customer_id == customer_id)
+  my_tickets = db.session.execute(query).scalars().all()
+  if not my_tickets:
+    return jsonify({"message": "there are no tickets for this customer"}), 404
+  else:
+    return my_tickets_schema.jsonify(my_tickets), 200

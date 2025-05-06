@@ -12,7 +12,6 @@ from app.utils.util import token_required
 def create_ticket():
   try:
     ticket_data = ticket_schema.load(request.json)
-    print(ticket_data)
   except ValidationError as e:
     return jsonify(e.messages), 400
   

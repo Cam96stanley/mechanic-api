@@ -69,5 +69,6 @@ class TicketsInventory(Base):
   ticket_id: Mapped[int] = mapped_column(db.ForeignKey("service_tickets.id"), nullable=False)
   quantity: Mapped[int] = mapped_column(nullable=False)
   
-  item: Mapped["Inventory"] = db.relationship(back_populates="tickets_inventory")
+  item: Mapped["Inventory"] = db.relationship(back_populates="ticket_items")
+  service_tickets: Mapped["Service_Ticket"] = db.relationship(back_populates="ticket_items")
   

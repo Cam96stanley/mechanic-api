@@ -6,3 +6,4 @@ class InventorySchema(ma.SQLAlchemyAutoSchema):
     model = Inventory
     
 inventory_schema = InventorySchema()
+all_inventory_schema = InventorySchema(many=True)

@@ -83,7 +83,6 @@ def get_customer(customer_id):
 @customers_bp.route("/", methods=["PUT"])
 @token_required
 def update_customer(customer_id):
-  print(customer_id)
   query = select(Customer).where(Customer.id == int(customer_id))
   customer = db.session.execute(query).scalars().first()
   

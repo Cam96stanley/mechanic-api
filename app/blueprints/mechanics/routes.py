@@ -77,3 +77,17 @@ def delete_mechanic(mechanic_id):
     return jsonify({"message": f"successfully deleted customer {mechanic_id}"}), 200
   else:
     return jsonify({"error": "customer not found"}), 404
+  
+# Sort Mechanics by Experience
+@mechanics_bp.route("/experience", methods=["GET"])
+def get_mechanics_experience():
+  query = select(Mechanic)
+  mechanics = db.session.execute(query).scalars().all()
+  
+  mechanics.sort(key = lambda mechanic: len(mechanic.service_tickets), reverse=True)
+  
+  return mechanics_schema.jsonify(mechanics), 200
+  
+  
+    
+  

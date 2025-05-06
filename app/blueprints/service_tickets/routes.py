@@ -2,7 +2,7 @@ from flask import request, jsonify
 from sqlalchemy import select, delete
 from marshmallow import ValidationError
 from app.blueprints.service_tickets import tickets_bp
-from app.blueprints.service_tickets.schemas import ticket_schema, return_ticket_schema, return_tickets_schema, my_tickets_schema
+from app.blueprints.service_tickets.schemas import ticket_schema, return_ticket_schema, return_tickets_schema, my_tickets_schema, edit_ticket_schema
 from app.models import Mechanic, Service_Ticket, db
 from app.extensions import cache
 from app.utils.util import token_required
@@ -59,3 +59,32 @@ def get_customer_ticket(customer_id):
     return jsonify({"message": "there are no tickets for this customer"}), 404
   else:
     return my_tickets_schema.jsonify(my_tickets), 200
+  
+# Update mechanics on Ticket
+@tickets_bp.route("/<int:ticket_id>/edit", methods=["PUT"])
+def update_ticket_mechanics(ticket_id):
+  try:
+    ticket_edits = edit_ticket_schema.load(request.json)
+  except ValidationError as e:
+    return jsonify(e.messages), 400
+    
+  query = select(Service_Ticket).where(Service_Ticket.id == ticket_id)
+  ticket = db.session.execute(query).scalars().first()
+  
+  for mechanic_id in ticket_edits["add_mechanic_ids"]:
+    query = select(Mechanic).where(Mechanic.id == mechanic_id)
+    mechanic = db.session.execute(query).scalars().first()
+    
+    if mechanic and mechanic not in ticket.mechanics:
+      ticket.mechanics.append(mechanic)
+      
+  for mechanic_id in ticket_edits["remove_mechanic_ids"]:
+    query = select(Mechanic).where(Mechanic.id == mechanic_id)
+    mechanic = db.session.execute(query).scalars().first()
+    
+    if mechanic and mechanic in ticket.mechanics:
+      ticket.mechanics.remove(mechanic)
+      
+  db.session.commit()
+  return ticket_schema.jsonify(ticket), 200
+      

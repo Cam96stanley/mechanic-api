@@ -56,11 +56,18 @@ def create_customer():
 
 # Get All Customers
 @customers_bp.route("/", methods=["GET"])
-@cache.cached(timeout=60) # Cached for 60 seconds because the shop will likely need to pull up customers for appointments frequently and since this is not likely to be updated very frequently at a mechanic shop I think 60 seconds is a decent amount of time. Can easily be changed if it does become an issue. 
+# @cache.cached(timeout=60) # Cached for 60 seconds because the shop will likely need to pull up customers for appointments frequently and since this is not likely to be updated very frequently at a mechanic shop I think 60 seconds is a decent amount of time. Can easily be changed if it does become an issue. 
 def get_customers():
-  query = select(Customer)
-  result = db.session.execute(query).scalars().all()
-  return customers_schema.jsonify(result), 200
+  try:
+    page = int(request.args.get('page'))
+    per_page = int(request.args.get('per_page'))
+    query = select(Customer)
+    customers = db.paginate(query, page=page, per_page=per_page)
+    return customers_schema.jsonify(customers), 200
+  except:
+    query = select(Customer)
+    customers = db.session.execute(query).scalars().all()
+    return customers_schema.jsonify(customers), 200
 
 # Get Single Customer
 @customers_bp.route("/<int:customer_id>", methods=["GET"])

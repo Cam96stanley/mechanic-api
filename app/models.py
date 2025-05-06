@@ -26,6 +26,17 @@ class Customer(Base):
   
   service_tickets: Mapped[List["Service_Ticket"]] = db.relationship(back_populates="customer", cascade="all, delete")
   
+class Mechanic(Base):
+  __tablename__ = "mechanics"
+  
+  id: Mapped[int] = mapped_column(primary_key=True)
+  name: Mapped[str] = mapped_column(db.String(100))
+  email: Mapped[str] = mapped_column(db.String(150), unique=True)
+  phone: Mapped[str] = mapped_column(db.String(20), unique=True)
+  salary: Mapped[float]
+  
+  service_tickets: Mapped[List["Service_Ticket"]] = db.relationship(secondary=service_mechanics, back_populates="mechanics")
+  
 class Service_Ticket(Base):
   __tablename__ = "service_tickets"
   
@@ -37,14 +48,26 @@ class Service_Ticket(Base):
   
   customer: Mapped["Customer"] = db.relationship(back_populates="service_tickets")
   mechanics: Mapped[List["Mechanic"]] = db.relationship(secondary=service_mechanics, back_populates="service_tickets")
+  ticket_items: Mapped[List["TicketsInventory"]] = db.relationship(back_populates="service_tickets")
   
-class Mechanic(Base):
-  __tablename__ = "mechanics"
+  
+class Inventory(Base):
+  __tablename__ = "items"
   
   id: Mapped[int] = mapped_column(primary_key=True)
-  name: Mapped[str] = mapped_column(db.String(100))
-  email: Mapped[str] = mapped_column(db.String(150), unique=True)
-  phone: Mapped[str] = mapped_column(db.String(20), unique=True)
-  salary: Mapped[float]
+  item_name: Mapped[str] = mapped_column(db.String(150), nullable=False)
+  price: Mapped[float]
   
-  service_tickets: Mapped[List["Service_Ticket"]] = db.relationship(secondary=service_mechanics, back_populates="mechanics")
+  ticket_items: Mapped[List["TicketsInventory"]] = db.relationship(back_populates="item")
+  
+
+class TicketsInventory(Base):
+  __tablename__ = "tickets_inventory"
+  
+  id: Mapped[int] = mapped_column(primary_key=True)
+  inventory_id: Mapped[int] = mapped_column(db.ForeignKey("items.id"), nullable=False)
+  ticket_id: Mapped[int] = mapped_column(db.ForeignKey("service_tickets.id"), nullable=False)
+  quantity: Mapped[int] = mapped_column(nullable=False)
+  
+  item: Mapped["Inventory"] = db.relationship(back_populates="tickets_inventory")
+  

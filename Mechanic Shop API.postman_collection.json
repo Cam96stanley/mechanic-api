@@ -68,7 +68,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Cameron\",\r\n    \"email\": \"cam@test.com\",\r\n    \"password\": \"test1234\",\r\n    \"phone\": \"8132557532\"\r\n}",
+							"raw": "{\r\n    \"customer_name\": \"Joey\",\r\n    \"customer_email\": \"joe@test.com\",\r\n    \"customer_password\": \"test1234\",\r\n    \"customer_phone\": \"845215785\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,7 +252,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"noodle\",\r\n    \"email\": \"noodle@test.com\",\r\n    \"phone\": \"123456123\",\r\n    \"salary\": 60000.00\r\n}",
+							"raw": "{\r\n    \"mechanic_name\": \"joey\",\r\n    \"mechanic_email\": \"joe@test.com\",\r\n    \"mechanic_phone\": \"7894624865\",\r\n    \"mechanic_salary\": 60000.00\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -389,7 +389,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"vin\": \"lkajsd;anona\",\r\n    \"service_date\": \"2025-05-03\",\r\n    \"service_desc\": \"Change Tires\",\r\n    \"customer_id\": 1,\r\n    \"mechanic_ids\": [1, 2]\r\n}",
+							"raw": "{\r\n    \"vin\": \"lkajsd;\",\r\n    \"service_date\": \"2025-05-03\",\r\n    \"service_desc\": \"Change Tires\",\r\n    \"customer_id\": 1,\r\n    \"mechanic_ids\": [1]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -504,7 +504,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"ticket_parts\": [\r\n        {\r\n            \"part\": {\r\n                \"item_name\": \"brake_pad\",\r\n                \"price\": 100.00\r\n            },\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"inventory_id\": 1,\r\n    \"quantity\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -541,7 +541,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"item_name\": \"tire\",\r\n    \"price\": 100.00\r\n}",
+							"raw": "{\r\n    \"item_name\": \"break pads\",\r\n    \"item_price\": 50.00\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -620,7 +620,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"item_name\": \"tire\",\r\n    \"price\": 200.00\r\n}",
+							"raw": "{\r\n    \"item_name\": \"tire\",\r\n    \"item_price\": 200.00\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

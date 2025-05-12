@@ -16,10 +16,10 @@ def create_mechanic():
     return jsonify(e.messages), 400
   
   new_mechanic = Mechanic(
-                    name=mechanic_data["name"],
-                    email=mechanic_data["email"],
-                    phone=mechanic_data["phone"],
-                    salary=mechanic_data["salary"]
+                    mechanic_name=mechanic_data["mechanic_name"],
+                    mechanic_email=mechanic_data["mechanic_email"],
+                    mechanic_phone=mechanic_data["mechanic_phone"],
+                    mechanic_salary=mechanic_data["mechanic_salary"]
                     )
   
   db.session.add(new_mechanic)

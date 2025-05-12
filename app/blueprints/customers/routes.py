@@ -43,10 +43,10 @@ def create_customer():
     return jsonify(e.messages), 400
   
   new_customer = Customer(
-                    name=customer_data["name"],
-                    email=customer_data["email"],
-                    password=customer_data["password"],
-                    phone=customer_data["phone"]
+                    customer_name=customer_data["customer_name"],
+                    customer_email=customer_data["customer_email"],
+                    customer_password=customer_data["customer_password"],
+                   customer_phone=customer_data["customer_phone"]
                     )
   
   db.session.add(new_customer)

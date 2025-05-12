@@ -8,4 +8,4 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
     
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True)
-login_schema = CustomerSchema(exclude=["name", "phone"])
+login_schema = CustomerSchema(exclude=["customer_name", "customer_phone"])

@@ -1,54 +1,59 @@
-from flask import request, jsonify
-from sqlalchemy import select, delete
+from flask import jsonify, request
+from sqlalchemy import select
 from marshmallow import ValidationError
 from app.blueprints.inventory import inventory_bp
-from app.blueprints.inventory.schemas import inventory_schema, all_inventory_schema
-from app.models import Inventory, db
+from app.models import db
+from app.models import Inventory
+from app.blueprints.inventory.schemas import inventory_item_schema, inventory_items_schema
 
-
-# Create Inventory item
+# Create Inventory Item
 @inventory_bp.route("/", methods=["POST"])
-def create_item():
+def create_inventory_item():
   try:
-    inventory_data = inventory_schema.load(request.json)
+    item_data = inventory_item_schema.load(request.json)
   except ValidationError as e:
     return jsonify(e.messages), 400
   
-  new_item = Inventory(item_name=inventory_data["item_name"], price=inventory_data["price"])
+  new_item = Inventory(item_name=item_data["item_name"], item_price=item_data["item_price"])
   
   db.session.add(new_item)
   db.session.commit()
   
-  return inventory_schema.jsonify(new_item), 201
+  return inventory_item_schema.jsonify(new_item), 201
 
-# Get All Invenory
+# Get All Inventory Items
 @inventory_bp.route("/", methods=["GET"])
-def get_inventory():
+def get_all_inventory():
   query = select(Inventory)
   inventory = db.session.execute(query).scalars().all()
-  return all_inventory_schema.jsonify(inventory), 200
+  
+  if not inventory:
+    return jsonify({"message": "No items in inventory"}), 400
+  
+  return inventory_items_schema.jsonify(inventory), 200
 
-# Get Item from Inventory
+# Get Inventory Item
 @inventory_bp.route("/<int:item_id>", methods=["GET"])
-def get_inventory_item(item_id):
+def get_item(item_id):
   query = select(Inventory).where(Inventory.id == item_id)
   item = db.session.execute(query).scalars().first()
-  if not item:
-    return jsonify({"message": "invalid item id"}), 404
-  else:
-    return inventory_schema.jsonify(item), 200
   
-# Update inventory item
+  if not item:
+    return jsonify({"message": "No item with that id"}), 404
+  
+  return inventory_item_schema.jsonify(item), 200
+
+# Update Item
 @inventory_bp.route("/<int:item_id>", methods=["PUT"])
-def update_inventory_item(item_id):
+def update_item(item_id):
   query = select(Inventory).where(Inventory.id == item_id)
   item = db.session.execute(query).scalars().first()
   
-  if not item:
-    return jsonify({"message": "invalid item id"}), 404
+  if item == None:
+    return jsonify({"message": "No item with that id"}), 404
   
   try:
-    item_data = inventory_schema.load(request.json)
+    item_data = inventory_item_schema.load(request.json)
   except ValidationError as e:
     return jsonify(e.messages), 400
   
@@ -56,16 +61,16 @@ def update_inventory_item(item_id):
     setattr(item, field, value)
   
   db.session.commit()
-  return inventory_schema.jsonify(item), 200
   
-# Delete item from inventory
+  return inventory_item_schema.jsonify(item), 200
+
+# Delete Inventory Item
 @inventory_bp.route("/<int:item_id>", methods=["DELETE"])
-def delete_inventory_item(item_id):
+def delete_item(item_id):
   query = select(Inventory).where(Inventory.id == item_id)
   item = db.session.execute(query).scalars().first()
-  if not item:
-    return jsonify({"message": "invalid item id"}), 404
-  else:
-    db.session.delete(item)
-    db.session.commit()
-    return jsonify({"message": f"successfully deleted item {item_id}"}), 200
+  
+  db.session.delete(item)
+  db.session.commit()
+  
+  return jsonify({"message": f"successfully deleted item {item_id}"})

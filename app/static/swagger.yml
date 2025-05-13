@@ -1,0 +1,222 @@
+swagger: "2.0"
+info:
+  title: "Mechanic Shop API"
+  description: "This is an API to manage a mechanic shop"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /customers/login:
+    post:
+      tags:
+        - Members
+      summary: "Login endpoint (generates token)"
+      description: "Validates customer credentials, generates and return a customer specific token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+
+  /customers:
+    post:
+      tags:
+        - Members
+      summary: "Endpoint to create/register a new customer"
+      description: "Endpoint to create a new customer in our mechanic shop system, emails must be unique."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information required to create a new customer"
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCustomerPayload"
+      responses: # <- properly aligned now
+        201:
+          description: "Customer created"
+          schema:
+            $ref: "#/definitions/CreateCustomerResponse"
+
+    get:
+      tags:
+        - Members
+      summary: "Returns all customers"
+      description: "Endpoint to retrieve a list of all customers"
+      responses:
+        200:
+          description: "Retrieved Customers Successfully"
+          schema:
+            $ref: "#/definitions/AllCustomers"
+
+    put:
+      tags:
+        - Members
+      summary: "Endpoint to update a customer"
+      description: "Endpoint to update a customer, this is a token authenticated route, and the customer must be logged in to update their account"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information requried to update a customer"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateCustomerPayload"
+      responses:
+        200:
+          descriptions: "Successfully updated customer"
+          schema:
+            $ref: "#/definitions/UpdateCustomerResoponse"
+
+    delete:
+      tags:
+        - Members
+      summary: "Endpoint to delete a customer"
+      description: "Endpoint to delete a customer. Requires token authentication, customer must be logged in to delete their account"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully deleted customer"
+          schema:
+            $ref: "#/definitions/DeleteCustomerResponse"
+
+definitions:
+  LoginCredentials:
+    type: "object"
+    properties:
+      customer_email:
+        type: "string"
+      customer_password:
+        type: "string"
+    required:
+      - customer_email
+      - customer_password
+
+  LoginResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+      message:
+        type: "string"
+      status:
+        type: "string"
+
+  CreateCustomerPayload:
+    type: "object"
+    properties:
+      customer_name:
+        type: "string"
+      customer_email:
+        type: "string"
+      customer_password:
+        type: "string"
+      customer_phone:
+        type: "string"
+    required:
+      - customer_name
+      - customer_email
+      - customer_password
+      - customer_phone
+
+  CreateCustomerResponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      customer_name:
+        type: "string"
+      customer_email:
+        type: "string"
+      customer_password:
+        type: "string"
+      customer_phone:
+        type: "string"
+    example:
+      id: 1
+      customer_name: "John Doe"
+      customer_email: "jdoe@example.com"
+      customer_password: "test1234"
+      customer_phone: "1234567890"
+
+  AllCustomers:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        customer_name:
+          type: "string"
+        customer_email:
+          type: "string"
+        customer_password:
+          type: "string"
+        customer_phone:
+          type: "string"
+
+  UpdateCustomerPayload:
+    type: "object"
+    properties:
+      customer_name:
+        type: "string"
+      customer_email:
+        type: "string"
+      customer_password:
+        type: "string"
+      customer_phone:
+        type: "string"
+
+    required:
+      - customer_name
+      - customer_email
+      - customer_password
+      - customer_phone
+
+  UpdateCustomerResoponse:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      customer_name:
+        type: "string"
+      customer_email:
+        type: "string"
+      customer_password:
+        type: "string"
+      customer_phone:
+        type: "string"
+    example:
+      id: 1
+      customer_name: "John Doe"
+      customer_email: "johnd@example.com"
+      customer_password: "test1234"
+      customer_phone: "1234567890"
+
+  DeleteCustomerResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+    example:
+      message: "successfully deleted customer <customer_id>"

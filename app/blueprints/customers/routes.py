@@ -12,15 +12,15 @@ from app.utils.util import encode_token, token_required
 def login():
   try:
     credentials = login_schema.load(request.json)
-    username = credentials["email"]
-    password = credentials["password"]
+    username = credentials["customer_email"]
+    password = credentials["customer_password"]
   except KeyError:
     return jsonify({"message": "Invalid payload, expecting username and password"}), 400
   
-  query = select(Customer).where(Customer.email == username)
+  query = select(Customer).where(Customer.customer_email == username)
   customer = db.session.execute(query).scalar_one_or_none()
   
-  if customer and customer.password == password:
+  if customer and customer.customer_password == password:
     auth_token = encode_token(customer.id)
     
     response = {
@@ -46,7 +46,7 @@ def create_customer():
                     customer_name=customer_data["customer_name"],
                     customer_email=customer_data["customer_email"],
                     customer_password=customer_data["customer_password"],
-                   customer_phone=customer_data["customer_phone"]
+                    customer_phone=customer_data["customer_phone"]
                     )
   
   db.session.add(new_customer)

@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
-  title: "Mechanic Shop API"
-  description: "This is an API to manage a mechanic shop"
+  title: Mechanic Shop API
+  description: This is an API to manage a mechanic shop
   version: "1.0.0"
 host: "127.0.0.1:5000"
 schemes:
@@ -22,18 +22,18 @@ paths:
     post:
       tags:
         - Members
-      summary: "Login endpoint (generates token)"
-      description: "Validates customer credentials, generates and return a customer specific token."
+      summary: Login endpoint (generates token)
+      description: Validates customer credentials, generates and return a customer specific token.
       parameters:
-        - in: "body"
-          name: "body"
-          description: "Login Credentials"
+        - in: body
+          name: body
+          description: Login Credentials
           required: true
           schema:
             $ref: "#/definitions/LoginCredentials"
       responses:
         200:
-          description: "Login successful"
+          description: Login successful
           schema:
             $ref: "#/definitions/LoginResponse"
 
@@ -41,98 +41,217 @@ paths:
     post:
       tags:
         - Members
-      summary: "Endpoint to create/register a new customer"
-      description: "Endpoint to create a new customer in our mechanic shop system, emails must be unique."
+      summary: Endpoint to create/register a new customer
+      description: Endpoint to create a new customer in our mechanic shop system, emails and phone numbers must be unique.
       parameters:
-        - in: "body"
-          name: "body"
-          description: "Information required to create a new customer"
+        - in: body
+          name: body
+          description: Information required to create a new customer
           required: true
           schema:
             $ref: "#/definitions/CreateCustomerPayload"
-      responses: # <- properly aligned now
+      responses:
         201:
-          description: "Customer created"
+          description: Customer created
           schema:
             $ref: "#/definitions/CreateCustomerResponse"
 
     get:
       tags:
         - Members
-      summary: "Returns all customers"
-      description: "Endpoint to retrieve a list of all customers"
+      summary: Returns all customers
+      description: Endpoint to retrieve a list of all customers
       responses:
         200:
-          description: "Retrieved Customers Successfully"
+          description: Retrieved customers successfully
           schema:
             $ref: "#/definitions/AllCustomers"
 
     put:
       tags:
         - Members
-      summary: "Endpoint to update a customer"
-      description: "Endpoint to update a customer, this is a token authenticated route, and the customer must be logged in to update their account"
+      summary: Endpoint to update a customer
+      description: Endpoint to update a customer, this is a token authenticated route, and the customer must be logged in to update their account
       security:
         - bearerAuth: []
       parameters:
-        - in: "body"
-          name: "body"
-          description: "Information requried to update a customer"
+        - in: body
+          name: body
+          description: Information requried to update a customer
           required: true
           schema:
             $ref: "#/definitions/UpdateCustomerPayload"
       responses:
         200:
-          descriptions: "Successfully updated customer"
+          descriptions: Successfully updated customer
           schema:
-            $ref: "#/definitions/UpdateCustomerResoponse"
+            $ref: "#/definitions/UpdateCustomerResponse"
 
     delete:
       tags:
         - Members
-      summary: "Endpoint to delete a customer"
-      description: "Endpoint to delete a customer. Requires token authentication, customer must be logged in to delete their account"
+      summary: Endpoint to delete a customer
+      description: Endpoint to delete a customer. Requires token authentication, customer must be logged in to delete their account
       security:
         - bearerAuth: []
       responses:
         200:
-          description: "Successfully deleted customer"
+          description: Successfully deleted customer
           schema:
             $ref: "#/definitions/DeleteCustomerResponse"
 
+  /customers/{customer_id}:
+    get:
+      tags:
+        - Members
+      summary: Endpoint to get a single customer
+      description: Endpoint to retrieve a single customer
+      parameters:
+        - name: customer_id
+          in: path
+          description: ID of customer to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Retrieved customer successfully
+          schema:
+            $ref: "#/definitions/SingleCustomer"
+
+  /mechanics:
+    post:
+      tags:
+        - Mechanics
+      summary: Endpoint to create a new mechanic
+      description: Endpoint to create a new mechanic in our mechanic shop system, emails and phone numbers must be unique.
+      parameters:
+        - in: body
+          name: body
+          description: Information required to create a new mechanic
+          required: true
+          schema:
+            $ref: "#/definitions/CreateMechanicPayload"
+      responses:
+        201:
+          description: Mechanic created
+          schema:
+            $ref: "#/definitions/CreateMechanicResponse"
+
+    get:
+      tags:
+        - Mechanics
+      summary: Returns all mechanics
+      description: Endpoint to retrieve a list of all mechanics
+      responses:
+        200:
+          description: Retrieved mechanics successfully
+          schema:
+            $ref: "#/definitions/AllMechanics"
+
+    put:
+      tags:
+        - Mechanics
+      summary: Endpoint to update a mechanic
+      description: Endpoint to update a mechanic, this is a token authenticated route, and the mechanic must be logged in to update their account
+      parameters:
+        - in: body
+          name: body
+          description: Information requried to update a mechanic
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateMechanicPayload"
+      responses:
+        200:
+          descriptions: Successfully updated mechanic
+          schema:
+            $ref: "#/definitions/UpdateMechanicResponse"
+
+  /mechanics/experience:
+    get:
+      tags:
+        - Mechanics
+      summary: Endpoint to request mechanics by experience
+      description: Enpoint to request a list of mechanics by experience
+      responses:
+        200:
+          description: Retrieved mechanics successfully
+          schema:
+            $ref: "#/definitions/AllMechanics"
+
+  /mechanics/{mechanic_id}:
+    delete:
+      tags:
+        - Mechanics
+      summary: Endpoint to delete a single mechanic
+      description: Endpoint to delete a single mechanic
+      parameters:
+        - name: mechanic_id
+          in: path
+          description: ID of mechanic to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Deleted mechanic successfully
+          schema:
+            $ref: "#/definitions/DeleteMechanicResponse"
+
+    get:
+      tags:
+        - Mechanics
+      summary: Endpoint to get a single mechanic
+      description: Endpoint to retrieve a single mechanic
+      parameters:
+        - name: mechanic_id
+          in: path
+          description: ID of mechanic to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Retrieved mechanic successfully
+          schema:
+            $ref: "#/definitions/SingleMechanic"
+
 definitions:
   LoginCredentials:
-    type: "object"
+    type: object
     properties:
       customer_email:
-        type: "string"
+        type: string
       customer_password:
-        type: "string"
+        type: string
     required:
       - customer_email
       - customer_password
 
   LoginResponse:
-    type: "object"
+    type: object
     properties:
       token:
-        type: "string"
+        type: string
       message:
-        type: "string"
+        type: string
       status:
-        type: "string"
+        type: string
 
   CreateCustomerPayload:
-    type: "object"
+    type: object
     properties:
       customer_name:
-        type: "string"
+        type: string
       customer_email:
-        type: "string"
+        type: string
       customer_password:
-        type: "string"
+        type: string
       customer_phone:
-        type: "string"
+        type: string
     required:
       - customer_name
       - customer_email
@@ -140,18 +259,18 @@ definitions:
       - customer_phone
 
   CreateCustomerResponse:
-    type: "object"
+    type: object
     properties:
       id:
-        type: "integer"
+        type: integer
       customer_name:
-        type: "string"
+        type: string
       customer_email:
-        type: "string"
+        type: string
       customer_password:
-        type: "string"
+        type: string
       customer_phone:
-        type: "string"
+        type: string
     example:
       id: 1
       customer_name: "John Doe"
@@ -160,32 +279,32 @@ definitions:
       customer_phone: "1234567890"
 
   AllCustomers:
-    type: "array"
+    type: array
     items:
-      type: "object"
+      type: object
       properties:
         id:
-          type: "integer"
+          type: integer
         customer_name:
-          type: "string"
+          type: string
         customer_email:
-          type: "string"
+          type: string
         customer_password:
-          type: "string"
+          type: string
         customer_phone:
-          type: "string"
+          type: string
 
   UpdateCustomerPayload:
-    type: "object"
+    type: object
     properties:
       customer_name:
-        type: "string"
+        type: string
       customer_email:
-        type: "string"
+        type: string
       customer_password:
-        type: "string"
+        type: string
       customer_phone:
-        type: "string"
+        type: string
 
     required:
       - customer_name
@@ -193,19 +312,19 @@ definitions:
       - customer_password
       - customer_phone
 
-  UpdateCustomerResoponse:
-    type: "object"
+  UpdateCustomerResponse:
+    type: object
     properties:
       id:
-        type: "integer"
+        type: integer
       customer_name:
-        type: "string"
+        type: string
       customer_email:
-        type: "string"
+        type: string
       customer_password:
-        type: "string"
+        type: string
       customer_phone:
-        type: "string"
+        type: string
     example:
       id: 1
       customer_name: "John Doe"
@@ -214,9 +333,150 @@ definitions:
       customer_phone: "1234567890"
 
   DeleteCustomerResponse:
-    type: "object"
+    type: object
     properties:
       message:
-        type: "string"
+        type: string
     example:
       message: "successfully deleted customer <customer_id>"
+
+  SingleCustomer:
+    type: object
+    properties:
+      id:
+        type: integer
+      customer_name:
+        type: string
+      customer_email:
+        type: string
+      customer_password:
+        type: string
+      customer_phone:
+        type: string
+
+  CreateMechanicPayload:
+    type: object
+    properties:
+      id:
+        type: integer
+      mechanic_name:
+        type: string
+      mechanic_email:
+        type: string
+      mechanic_phone:
+        type: string
+      mechanic_salary:
+        type: number
+        format: float
+    example:
+      id: 1
+      mechanic_name: "John Doe"
+      mechanic_email: "jdoe@example.com"
+      mechanic_phone: "1234567890"
+      mechanic_salary: 60000.00
+
+  CreateMechanicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      mechanic_name:
+        type: string
+      mechanic_email:
+        type: string
+      mechanic_phone:
+        type: string
+      mechanic_salary:
+        type: number
+        format: float
+    example:
+      id: 1
+      mechanic_name: "John Doe"
+      mechanic_email: "jdoe@example.com"
+      mechanic_phone: "1234567890"
+      mechanic_salary: 60000.00
+
+  AllMechanics:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_name:
+          type: string
+        customer_email:
+          type: string
+        customer_password:
+          type: string
+        customer_phone:
+          type: string
+
+  UpdateMechanicPayload:
+    type: object
+    properties:
+      mechanic_name:
+        type: string
+      mechanic_email:
+        type: string
+      mechanic_phone:
+        type: string
+      mechanic_salary:
+        type: number
+        format: float
+
+    required:
+      - mechanic_name
+      - mechanic_email
+      - mechanic_phone
+      - mechanic_salary
+
+  UpdateMechanicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      mechanic_name:
+        type: string
+      mechanic_email:
+        type: string
+      mechanic_phone:
+        type: string
+      mechanic_salary:
+        type: number
+        format: float
+    example:
+      id: 1
+      mechanic_name: "John Doe"
+      mechanic_email: "johnd@example.com"
+      mechanic_phone: "1234567890"
+      mechanic_salary: 60000.00
+
+  DeleteMechanicResponse:
+    type: object
+    properties:
+      message:
+        type: string
+    example:
+      message: "successfully deleted mechanic <mechanic_id>"
+
+  SingleMechanic:
+    type: object
+    properties:
+      id:
+        type: integer
+      mechanic_name:
+        type: string
+      mechanic_email:
+        type: string
+      mechanic_phone:
+        type: string
+      mechanic_salary:
+        type: number
+        format: float
+    example:
+      id: 1
+      mechanic_name: "John Doe"
+      mechanic_email: "johnd@example.com"
+      mechanic_phone: "1234567890"
+      mechanic_salary: 60000.00

@@ -3,7 +3,7 @@ from sqlalchemy import select
 from marshmallow import ValidationError
 from app.blueprints.inventory import inventory_bp
 from app.models import db
-from app.models import Inventory
+from app.models import Inventory, Ticket_Inventory
 from app.blueprints.inventory.schemas import inventory_item_schema, inventory_items_schema
 
 # Create Inventory Item
@@ -69,6 +69,14 @@ def update_item(item_id):
 def delete_item(item_id):
   query = select(Inventory).where(Inventory.id == item_id)
   item = db.session.execute(query).scalars().first()
+  
+  if item is None:
+    return jsonify({"error": f"Item with ID {item_id} not found"}), 404
+  
+  ref = db.session.execute(select(Ticket_Inventory).where(Ticket_Inventory.inventory_id == item_id)).scalars().first()
+  
+  if ref:
+    return jsonify({"error": "Cannot delete item. It is still linked to a ticket"}), 400
   
   db.session.delete(item)
   db.session.commit()

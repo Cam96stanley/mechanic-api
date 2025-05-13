@@ -150,24 +150,6 @@ paths:
           schema:
             $ref: "#/definitions/AllMechanics"
 
-    put:
-      tags:
-        - Mechanics
-      summary: Endpoint to update a mechanic
-      description: Endpoint to update a mechanic, this is a token authenticated route, and the mechanic must be logged in to update their account
-      parameters:
-        - in: body
-          name: body
-          description: Information requried to update a mechanic
-          required: true
-          schema:
-            $ref: "#/definitions/UpdateMechanicPayload"
-      responses:
-        200:
-          descriptions: Successfully updated mechanic
-          schema:
-            $ref: "#/definitions/UpdateMechanicResponse"
-
   /mechanics/experience:
     get:
       tags:
@@ -181,6 +163,29 @@ paths:
             $ref: "#/definitions/AllMechanics"
 
   /mechanics/{mechanic_id}:
+    put:
+      tags:
+        - Mechanics
+      summary: Endpoint to update a mechanic
+      description: Endpoint to update a mechanic. Email and phone number must be unique
+      parameters:
+        - name: mechanic_id
+          in: path
+          required: true
+          type: string
+          description: ID of the mechanic to update
+        - in: body
+          name: body
+          description: Information required to update a mechanic
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateMechanicPayload"
+      responses:
+        200:
+          description: Successfully updated mechanic
+          schema:
+            $ref: "#/definitions/UpdateMechanicResponse"
+
     delete:
       tags:
         - Mechanics
@@ -189,8 +194,9 @@ paths:
       parameters:
         - name: mechanic_id
           in: path
-          description: ID of mechanic to delete
           required: true
+          type: string
+          description: ID of the mechanic to delete
           schema:
             type: integer
             format: int64
@@ -219,6 +225,99 @@ paths:
           schema:
             $ref: "#/definitions/SingleMechanic"
 
+  /inventory:
+    post:
+      tags:
+        - Inventory
+      summary: Endpoint to create an inventory item
+      description: Endpoint to create a new inventory item in our mechanic shop system
+      parameters:
+        - in: body
+          name: body
+          description: Information required to create a new inventory item
+          required: true
+          schema:
+            $ref: "#/definitions/CreateInventoryPayload"
+      responses:
+        201:
+          description: Inventory item created
+          schema:
+            $ref: "#/definitions/CreateInventoryResponse"
+
+    get:
+      tags:
+        - Inventory
+      summary: Endpoint to retrieve all inventory items
+      description: Endpoint to retrieve a list of all inventory items
+      responses:
+        200:
+          description: Retrieved inventory items successfully
+          schema:
+            $ref: "#/definitions/AllInventory"
+
+  /inventory/{inventory_id}:
+    put:
+      tags:
+        - Inventory
+      summary: Endpoint to update an inventory item
+      description: Endpoint to update an existing inventory item
+      parameters:
+        - name: inventory_id
+          in: path
+          required: true
+          type: string
+          description: ID of the inventory item to update
+        - in: body
+          name: body
+          description: Information required to update a inventory item
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateInventoryPayload"
+      responses:
+        200:
+          description: Successfully updated inventory item
+          schema:
+            $ref: "#/definitions/UpdateInventoryResponse"
+
+    delete:
+      tags:
+        - Inventory
+      summary: Endpoint to delete an inventory item
+      description: Endpoint to delete an inventory item
+      parameters:
+        - name: inventory_id
+          in: path
+          required: true
+          type: string
+          description: ID of the inventory item to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Deleted inventory item successfully
+          schema:
+            $ref: "#/definitions/DeleteInventoryResponse"
+
+    get:
+      tags:
+        - Inventory
+      summary: Endpoint to retrieve an inventory item
+      description: Enpoint to retrieve a single inventory item
+      parameters:
+        - name: inventory_id
+          in: path
+          description: ID of inventory item to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Retrieved inventory item successfully
+          schema:
+            $ref: "#/definitions/SingleInventoryItem"
+
 definitions:
   LoginCredentials:
     type: object
@@ -227,6 +326,7 @@ definitions:
         type: string
       customer_password:
         type: string
+
     required:
       - customer_email
       - customer_password
@@ -252,6 +352,7 @@ definitions:
         type: string
       customer_phone:
         type: string
+
     required:
       - customer_name
       - customer_email
@@ -271,6 +372,7 @@ definitions:
         type: string
       customer_phone:
         type: string
+
     example:
       id: 1
       customer_name: "John Doe"
@@ -325,6 +427,7 @@ definitions:
         type: string
       customer_phone:
         type: string
+
     example:
       id: 1
       customer_name: "John Doe"
@@ -357,8 +460,6 @@ definitions:
   CreateMechanicPayload:
     type: object
     properties:
-      id:
-        type: integer
       mechanic_name:
         type: string
       mechanic_email:
@@ -368,8 +469,14 @@ definitions:
       mechanic_salary:
         type: number
         format: float
+
+    required:
+      - mechanic_name
+      - mechanic_email
+      - mechanic_phone
+      - mechanic_salary
+
     example:
-      id: 1
       mechanic_name: "John Doe"
       mechanic_email: "jdoe@example.com"
       mechanic_phone: "1234567890"
@@ -389,6 +496,7 @@ definitions:
       mechanic_salary:
         type: number
         format: float
+
     example:
       id: 1
       mechanic_name: "John Doe"
@@ -445,6 +553,7 @@ definitions:
       mechanic_salary:
         type: number
         format: float
+
     example:
       id: 1
       mechanic_name: "John Doe"
@@ -474,9 +583,109 @@ definitions:
       mechanic_salary:
         type: number
         format: float
+
     example:
       id: 1
       mechanic_name: "John Doe"
       mechanic_email: "johnd@example.com"
       mechanic_phone: "1234567890"
       mechanic_salary: 60000.00
+
+  CreateInventoryPayload:
+    type: object
+    properties:
+      item_name:
+        type: string
+      item_price:
+        type: number
+        format: float
+
+    required:
+      - item_name
+      - item_price
+
+    example:
+      item_name: "Firestone Tire"
+      item_price: 100.00
+
+  CreateInventoryResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      item_name:
+        type: string
+      item_price:
+        type: number
+        format: float
+
+    example:
+      id: 1
+      item_name: "Firestone Tire"
+      item_price: 100.00
+
+  AllInventory:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        item_name:
+          type: string
+        item_price:
+          type: number
+          format: float
+
+  UpdateInventoryPayload:
+    type: object
+    properties:
+      item_name:
+        type: string
+      item_price:
+        type: number
+        format: float
+
+    required:
+      - item_name
+      - item_price
+
+  UpdateInventoryResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      item_name:
+        type: string
+      item_price:
+        type: number
+        format: float
+
+    example:
+      id: 1
+      item_name: "Break Pad"
+      item_price: 49.99
+
+  DeleteInventoryResponse:
+    type: object
+    properties:
+      message:
+        type: string
+    example:
+      message: "successfully deleted inventory item <inventory_id>"
+
+  SingleInventoryItem:
+    type: object
+    properties:
+      id:
+        type: integer
+      item_name:
+        type: string
+      item_price:
+        type: number
+        format: float
+
+    example:
+      id: 1
+      item_name: "FireStone Tire"
+      item_price: 100.00

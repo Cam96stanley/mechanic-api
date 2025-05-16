@@ -5,8 +5,8 @@ from marshmallow import fields
 
 
 class ServiceTicketSchema(ma.SQLAlchemyAutoSchema):
-  mechanics = fields.Nested("MechanicSchema", many=True)
-  customer = fields.Nested("CustomerSchema")
+  mechanics = fields.Nested("PublicMechanicSchema", many=True)
+  customer = fields.Nested("PublicCustomerSchema")
   service_items = fields.Nested("ServiceItemsSchema", many=True)
   class Meta:
     model = Service_Ticket
@@ -25,6 +25,9 @@ class ServiceItemsSchema(ma.SQLAlchemyAutoSchema):
   class Meta:
     model = Ticket_Inventory
     fields = ("id", "inventory_id", "quantity", "inventory")
+    
+
+
 
 
 ticket_schema = ServiceTicketSchema()

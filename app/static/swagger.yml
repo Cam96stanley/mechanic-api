@@ -21,7 +21,7 @@ paths:
   /customers/login:
     post:
       tags:
-        - Members
+        - Customers
       summary: Login endpoint (generates token)
       description: Validates customer credentials, generates and return a customer specific token.
       parameters:
@@ -40,7 +40,7 @@ paths:
   /customers:
     post:
       tags:
-        - Members
+        - Customers
       summary: Endpoint to create/register a new customer
       description: Endpoint to create a new customer in our mechanic shop system, emails and phone numbers must be unique.
       parameters:
@@ -58,7 +58,7 @@ paths:
 
     get:
       tags:
-        - Members
+        - Customers
       summary: Returns all customers
       description: Endpoint to retrieve a list of all customers
       responses:
@@ -69,7 +69,7 @@ paths:
 
     put:
       tags:
-        - Members
+        - Customers
       summary: Endpoint to update a customer
       description: Endpoint to update a customer, this is a token authenticated route, and the customer must be logged in to update their account
       security:
@@ -89,7 +89,7 @@ paths:
 
     delete:
       tags:
-        - Members
+        - Customers
       summary: Endpoint to delete a customer
       description: Endpoint to delete a customer. Requires token authentication, customer must be logged in to delete their account
       security:
@@ -103,7 +103,7 @@ paths:
   /customers/{customer_id}:
     get:
       tags:
-        - Members
+        - Customers
       summary: Endpoint to get a single customer
       description: Endpoint to retrieve a single customer
       parameters:
@@ -317,6 +317,114 @@ paths:
           description: Retrieved inventory item successfully
           schema:
             $ref: "#/definitions/SingleInventoryItem"
+
+  /tickets:
+    post:
+      tags:
+        - Tickets
+      summary: Endpoint to create a service ticket
+      description: Endpoint to create a service ticket, VIN must be unique.
+      parameters:
+        - in: body
+          name: body
+          description: Information required to create a new service ticket
+          required: true
+          schema:
+            $ref: "#/definitions/CreateTicketPayload"
+      responses:
+        201:
+          description: Service ticket created
+          schema:
+            $ref: "#/definitions/CreateTicketResponse"
+
+    get:
+      tags:
+        - Tickets
+      summary: Endpoint to get all tickets
+      description: Endpoint to retrieve a list of all tickets
+      responses:
+        200:
+          description: Retrieved tickets successfully
+          schema:
+            $ref: "#/definitions/AllTickets"
+
+  /tickets/{ticket_id}/edit:
+    put:
+      tags:
+        - Tickets
+      summary: Endpoint to update mechanics for a service ticket
+      description: Endpoint to update mechanics for a service ticket
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          type: string
+          description: ID of the service ticket to update
+        - in: body
+          name: body
+          description: Information required to update a service ticket
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateTicketPayload"
+      responses:
+        200:
+          description: Successfully updated inventory item
+          schema:
+            $ref: "#/definitions/UpdateTicketResponse"
+
+  /tickets/my-tickets:
+    get:
+      tags:
+        - Tickets
+      summary: Endpoint to retrieve service tickets for a customer
+      description: Enpoint to retrieve a list of service tickets for a currently logged in customer
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Retrieved inventory item successfully
+          schema:
+            $ref: "#/definitions/YourTickets"
+
+  /tickets/{ticket_id}:
+    get:
+      tags:
+        - Tickets
+      summary: Endpoint to retrieve a single ticket by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Retrieved ticket successfully
+          schema:
+            $ref: "#/definitions/SingleTicket"
+
+    post:
+      tags:
+        - Tickets
+      summary: Endpoint to add an existing inventory part to a ticket
+      description: Endpoint to add an existing inventory item to an existing ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - in: body
+          name: body
+          description: Information required to add
+          required: true
+          schema:
+            $ref: "#/definitions/UpdatePartForTicketPayload"
+      responses:
+        200:
+          description: Successfully added inventory item
+          schema:
+            $ref: "#/definitions/UpdatePartForTicketResponse"
 
 definitions:
   LoginCredentials:
@@ -689,3 +797,312 @@ definitions:
       id: 1
       item_name: "FireStone Tire"
       item_price: 100.00
+
+  CreateTicketPayload:
+    type: object
+    properties:
+      vin:
+        type: string
+      service_date:
+        type: date
+      service_desc:
+        type: string
+      customer_id:
+        type: integer
+      mechanic_ids:
+        type: array
+        items:
+          type: integer
+
+    required:
+      - vin
+      - service_date
+      - service_desc
+      - customer_id
+      - mechanic_ids
+
+    example:
+      vin: "ABCdefFG123DEFghiGJE456Wert"
+      service_date: "2025-05-13"
+      service_desc: "Front passanger tire is flat, order and replace tire."
+      customer_id: 1
+      mechanic_ids: [1]
+
+  CreateTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      vin:
+        type: string
+      service_date:
+        type: date
+      service_desc:
+        type: string
+
+    example:
+      id: 1
+      vin: "ABCdefFG123DEFghiGJE456Wert"
+      service_date: "2025-05-13"
+      service_desc: "Front passanger tire is flat, order and replace tire."
+      service_items: []
+      customer:
+        customer_email: "jdoe@example.com"
+        customer_name: "John Doe"
+        customer_phone: "1234567890"
+        id: 1
+      mechanics:
+        - id: 1
+        - mechanic_name: "Jane Doe"
+
+  AllTickets:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        vin:
+          type: string
+        service_date:
+          type: string
+          format: date
+        service_desc:
+          type: string
+        customer:
+          type: object
+          properties:
+            id:
+              type: integer
+            customer_name:
+              type: string
+            customer_email:
+              type: string
+            customer_phone:
+              type: string
+        mechancis:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              mechanic_name:
+                type: string
+        service_items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              inventory_id:
+                type: integer
+              quantity:
+                type: integer
+              inventory:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  item_name:
+                    type: string
+                  item_price:
+                    type: number
+                    format: float
+
+  UpdateTicketPayload:
+    type: object
+    properties:
+      add_mechanic_ids:
+        type: array
+        items:
+          type: integer
+      remove_mechanic_ids:
+        type: array
+        items:
+          type: integer
+    required:
+      - add_mechanic_ids
+      - remove_mechanic_ids
+
+  UpdateTicketResponse:
+    type: object
+    properties:
+      message:
+        type: string
+
+  YourTickets:
+    type: array
+    properties:
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          service_date:
+            type: string
+            format: date
+          service_desc:
+            type: string
+          vin:
+            type: string
+          mechancis:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                mechanic_name:
+                  type: string
+          service_items:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                inventory_id:
+                  type: integer
+                quantity:
+                  type: integer
+                inventory:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    item_name:
+                      type: string
+                    item_price:
+                      type: number
+                      format: float
+
+    example:
+      - id: 1
+        mechanics: []
+        service_date: "2025-05-03"
+        service_desc: "Change Tires"
+        service_items:
+          - id: 1
+            inventory:
+              id: 1
+              item_name: "tire"
+              item_price: 200.0
+            inventory_id: 1
+            quantity: 2
+        vin: "lkajsd;"
+
+  SingleTicket:
+    type: object
+    properties:
+      id:
+        type: integer
+      vin:
+        type: string
+      service_date:
+        type: string
+        format: date
+      service_desc:
+        type: string
+      customer:
+        type: object
+        properties:
+          id:
+            type: integer
+          customer_name:
+            type: string
+          customer_email:
+            type: string
+          customer_phone:
+            type: string
+      mechanics:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            mechanic_name:
+              type: string
+      service_items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            inventory_id:
+              type: integer
+            quantity:
+              type: integer
+            inventory:
+              type: object
+              properties:
+                id:
+                  type: integer
+                item_name:
+                  type: string
+                item_price:
+                  type: number
+                  format: float
+    example:
+      customer:
+        customer_email: "joe@test.com"
+        customer_name: "Joey"
+        customer_phone: "845215785"
+        id: 1
+      customer_id: 1
+      id: 1
+      mechanics: []
+      service_date: "2025-05-03"
+      service_desc: "Change Tires"
+      service_items:
+        - id: 1
+          inventory:
+            id: 1
+            item_name: "tire"
+            item_price: 200.0
+          inventory_id: 1
+          quantity: 2
+      vin: "ABJDJRGJ5245ASDEGRR575Q;"
+
+  UpdatePartForTicketPayload:
+    type: object
+    properties:
+      inventory_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+      - inventory_id
+      - quantity
+
+  UpdatePartForTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      inventory:
+        type: object
+        properties:
+          id:
+            type: integer
+          item_name:
+            type: string
+          item_price:
+            type: number
+            format: float
+      inventory_id:
+        type: integer
+      quantity:
+        type: integer
+
+    example:
+      id: 2
+      inventory_id: 1
+      quantity: 2
+      inventory:
+        id: 1
+        item_name: "tire"
+        item_price: 200.0

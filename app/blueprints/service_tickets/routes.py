@@ -87,7 +87,7 @@ def update_ticket_mechanics(ticket_id):
       ticket.mechanics.remove(mechanic)
       
   db.session.commit()
-  return ticket_schema.jsonify(ticket), 200
+  return jsonify({"message": f"Mechanics successfully updated for ticket {ticket_id}"}), 200
       
 # Add Item to Ticket
 @tickets_bp.route("/<int:ticket_id>", methods=["POST"])

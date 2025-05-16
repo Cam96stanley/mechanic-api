@@ -34,5 +34,5 @@ def create_app(config_name):
   app.register_blueprint(tickets_bp, url_prefix="/tickets")
   app.register_blueprint(inventory_bp, url_prefix="/inventory")
   app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-  
+
   return app

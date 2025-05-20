@@ -6,6 +6,8 @@ from app.utils.util import encode_token
 class TestCustomer(unittest.TestCase):
   def setUp(self):
     self.app = create_app("TestingConfig")
+    self.app_context = self.app.app_context()
+    self.app_context.push()
     self.customer = Customer(customer_name="test_user", customer_email="test@email.com", customer_phone="7894561230", customer_password="test")
     with self.app.app_context():
       db.drop_all()
@@ -14,6 +16,11 @@ class TestCustomer(unittest.TestCase):
       db.session.commit()
     self.token = encode_token(1)
     self.client = self.app.test_client()
+    
+  def tearDown(self):
+    db.session.remove()
+    db.engine.dispose()
+    self.app_context.pop() 
     
   def test_create_customer(self):
     customer_payload = {
@@ -36,4 +43,13 @@ class TestCustomer(unittest.TestCase):
     response = self.client.post("/customers/login", json=credentials)
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.json["status"], "success")
-    return response.json["auth_token"]
+  
+  def test_invalid_login(self):
+    credentials = {
+      "customer_email": "bad_email@test.com",
+      "customer_password": "bad_pw"
+    }
+    
+    response = self.client.post("/customers/login", json=credentials)
+    self.assertEqual(response.status_code, 401)
+    self.assertEqual(response.json["message"], "Invalid email or password")

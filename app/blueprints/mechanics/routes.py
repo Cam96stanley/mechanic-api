@@ -41,8 +41,8 @@ def get_mechanic(mechanic_id):
   query = select(Mechanic).where(mechanic_id == Mechanic.id)
   mechanic = db.session.execute(query).scalars().first()
   
-  if mechanic == None:
-    return jsonify({"message": "invalid mechanic id"})
+  if not mechanic:
+    return jsonify({"message": "invalid mechanic id"}), 404
   
   return mechanic_schema.jsonify(mechanic), 200
 
@@ -87,7 +87,3 @@ def get_mechanics_experience():
   mechanics.sort(key = lambda mechanic: len(mechanic.service_tickets), reverse=True)
   
   return mechanics_schema.jsonify(mechanics), 200
-  
-  
-    
-  

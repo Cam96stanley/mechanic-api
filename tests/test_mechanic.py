@@ -109,6 +109,6 @@ class TestMechanic(unittest.TestCase):
     self.assertEqual(response.json[1]["mechanic_email"], "alpha@example.com")
     
   def test_delete_mechanic(self):
-    response = self.client.delete(f"/mechanics/1")
+    response = self.client.delete("/mechanics/1")
     self.assertEqual(response.status_code, 200)
     

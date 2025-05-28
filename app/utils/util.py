@@ -4,9 +4,10 @@ from functools import wraps
 from flask import request, jsonify
 from sqlalchemy import select
 from app.models import db, Customer
+import os
 import jose
 
-SECRET_KEY = "a super duper, uber, incredibly long, secret key"
+SECRET_KEY = os.environ.get("SECRET_KEY") or "a super duper, uber, incredibly long, secret key"
 
 def encode_token(customer_id):
   payload = {

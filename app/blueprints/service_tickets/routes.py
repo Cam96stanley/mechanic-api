@@ -53,8 +53,8 @@ def get_ticket(ticket_id):
 # Get Tickets for Customer
 @tickets_bp.route("/my-tickets", methods=["GET"])
 @token_required
-def get_customer_ticket(customer_id):
-  query = select(Service_Ticket).where(Service_Ticket.customer_id == customer_id)
+def get_customer_ticket(current_customer_id):
+  query = select(Service_Ticket).where(Service_Ticket.customer_id == current_customer_id)
   my_tickets = db.session.execute(query).scalars().all()
   if not my_tickets:
     return jsonify({"message": "there are no tickets for this customer"}), 404

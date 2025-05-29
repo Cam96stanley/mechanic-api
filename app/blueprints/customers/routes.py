@@ -103,13 +103,13 @@ def update_customer(current_customer_id):
 # Delete Customer
 @customers_bp.route("/", methods=["DELETE"])
 @token_required
-def delete_customer(customer_id):
-  query = select(Customer).where(Customer.id == int(customer_id))
+def delete_customer(current_customer_id):
+  query = select(Customer).where(Customer.id == int(current_customer_id))
   customer = db.session.execute(query).scalars().first()
   if customer:
     db.session.delete(customer)
     db.session.commit()
-    return jsonify({"message": f"successfully deleted customer {customer_id}"}), 200
+    return jsonify({"message": f"successfully deleted customer {current_customer_id}"}), 200
   else:
     return jsonify({"error": "customer not found"}), 404
   

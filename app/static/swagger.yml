@@ -72,6 +72,8 @@ paths:
         - Customers
       summary: Endpoint to update a customer
       description: Endpoint to update a customer, this is a token authenticated route, and the customer must be logged in to update their account
+      consumes:
+        - application/json
       security:
         - bearerAuth: []
       parameters:
@@ -86,6 +88,12 @@ paths:
           descriptions: Successfully updated customer
           schema:
             $ref: "#/definitions/UpdateCustomerResponse"
+        400:
+          description: Validation error
+        401:
+          description: Unauthorized
+        404:
+          description: Customer not found
 
     delete:
       tags:

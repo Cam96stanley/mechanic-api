@@ -32,9 +32,9 @@ def token_required(f):
     
     try:
       data = jwt.decode(token, SECRET_KEY, algorithms='HS256')
-      customer_id = data['sub']
+      current_customer_id = data['sub']
       
-      customer = db.session.execute(select(Customer).where(Customer.id == int(customer_id))).scalar_one_or_none()
+      customer = db.session.execute(select(Customer).where(Customer.id == int(current_customer_id))).scalar_one_or_none()
       if not customer:
         return jsonify({"message": "Invalid credentials. Please log in again"}), 401
       
@@ -43,7 +43,7 @@ def token_required(f):
     except jose.exceptions.JWTError:
       return jsonify({"message": "Invalid token"}), 401
     
-    return f(customer_id, *args, **kwargs)
+    return f(current_customer_id, *args, **kwargs)
   
   return decorated      
     

@@ -107,8 +107,8 @@ paths:
       summary: Endpoint to get a single customer
       description: Endpoint to retrieve a single customer
       parameters:
-        - name: customer_id
-          in: path
+        - in: path
+          name: customer_id
           description: ID of customer to return
           required: true
           schema:
@@ -169,8 +169,8 @@ paths:
       summary: Endpoint to update a mechanic
       description: Endpoint to update a mechanic. Email and phone number must be unique
       parameters:
-        - name: mechanic_id
-          in: path
+        - in: path
+          name: mechanic_id
           required: true
           type: string
           description: ID of the mechanic to update
@@ -192,8 +192,8 @@ paths:
       summary: Endpoint to delete a single mechanic
       description: Endpoint to delete a single mechanic
       parameters:
-        - name: mechanic_id
-          in: path
+        - in: path
+          name: mechanic_id
           required: true
           type: string
           description: ID of the mechanic to delete
@@ -212,8 +212,8 @@ paths:
       summary: Endpoint to get a single mechanic
       description: Endpoint to retrieve a single mechanic
       parameters:
-        - name: mechanic_id
-          in: path
+        - in: path
+          name: mechanic_id
           description: ID of mechanic to return
           required: true
           schema:
@@ -262,8 +262,8 @@ paths:
       summary: Endpoint to update an inventory item
       description: Endpoint to update an existing inventory item
       parameters:
-        - name: inventory_id
-          in: path
+        - in: path
+          name: inventory_id
           required: true
           type: string
           description: ID of the inventory item to update
@@ -285,8 +285,8 @@ paths:
       summary: Endpoint to delete an inventory item
       description: Endpoint to delete an inventory item
       parameters:
-        - name: inventory_id
-          in: path
+        - in: path
+          name: inventory_id
           required: true
           type: string
           description: ID of the inventory item to delete
@@ -305,8 +305,8 @@ paths:
       summary: Endpoint to retrieve an inventory item
       description: Enpoint to retrieve a single inventory item
       parameters:
-        - name: inventory_id
-          in: path
+        - in: path
+          name: inventory_id
           description: ID of inventory item to return
           required: true
           schema:
@@ -392,8 +392,8 @@ paths:
         - Tickets
       summary: Endpoint to retrieve a single ticket by ID
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: ticket_id
           required: true
           schema:
             type: integer
@@ -409,8 +409,8 @@ paths:
       summary: Endpoint to add an existing inventory part to a ticket
       description: Endpoint to add an existing inventory item to an existing ticket
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: ticket_id
           required: true
           schema:
             type: integer
